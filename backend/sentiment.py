@@ -1,6 +1,6 @@
 from ibm_watson import NaturalLanguageUnderstandingV1
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
-from ibm_watson.natural_language_understanding_v1 import Features, EmotionOptions
+from ibm_watson.natural_language_understanding_v1 import Features, EmotionOptions, CategoriesOptions, ConceptsOptions, KeywordsOptions
 
 
 def setup():
@@ -20,9 +20,12 @@ def setup():
 def analyze(natural_language_understanding, input_text):
     response = natural_language_understanding.analyze(
         text=input_text,
-        features=Features(emotion=EmotionOptions())).get_result()
+        features=Features(emotion=EmotionOptions(),
+                          categories=CategoriesOptions(limit=3),
+                          concepts=ConceptsOptions(limit=3),
+                          keywords=KeywordsOptions(limit=2))).get_result()
 
-    return response["emotion"]["document"]["emotion"]
+    return response
 
 
 if __name__ == "__main__":
