@@ -1,13 +1,13 @@
 import React, { useCallback, useState } from "react";
 import { useDropzone } from "react-dropzone";
 
-const SERVER_URL = "http://localhost:5000";
+console.log(`${window.location.href}:${process.env.PORT}`);
 
 const Upload = () => {
   const [receivedFiles, setReceivedFiles] = useState([]);
 
   const sendToServer = file => {
-    fetch(`${SERVER_URL}/getSentimentData`, {
+    fetch(`${window.location.href}:${process.env.PORT}/getSentimentData`, {
       method: "POST",
       body: file
     })
