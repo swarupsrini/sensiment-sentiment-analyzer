@@ -5,4 +5,10 @@ app = Flask(__name__)
 
 @app.route("/getSentimentData", methods=['POST'])
 def get_sentiment_data():
-    pass
+    # save file
+    data = request.get_data(cache=False)
+    print(data)
+    with open("song.mp3", "wb") as song:
+        song.write(data)
+    
+    
