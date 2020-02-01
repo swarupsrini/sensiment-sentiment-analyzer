@@ -21,3 +21,6 @@ def get_sentiment_data():
     blob.upload_from_filename(source_file_name)
 
     # 
+
+if __name__ == "__main__":
+    app.run()
