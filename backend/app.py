@@ -1,5 +1,6 @@
 from flask import Flask, request, send_from_directory
 from flask_cors import CORS
+import os
 import speechToText
 import sentiment
 
@@ -32,4 +33,4 @@ def get_sentiment_data_stream():
 
 
 if __name__ == "__main__":
-    app.run(use_reloader=True, port=5000, threaded=True)
+    app.run(host="0.0.0.0", use_reloader=True, port=os.environ["PORT"] if "PORT" in os.environ else 5000, threaded=True)
