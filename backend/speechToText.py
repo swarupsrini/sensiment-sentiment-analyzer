@@ -15,11 +15,9 @@ def speechToText(content):
         "language_code": 'en-US'
     }
     response = client.recognize(config, audio)
-    res = ""
-    for result in response.results:
-        # First alternative is the most probable result
-        res += result.alternatives[0].transcript
-        # print(type(result))
-        # alternative = result.alternatives[0]
-        # print(u"Transcript: {}".format(alternative.transcript)) 
+    return response
+    # res = ""
+    # for result in response.results:
+    #     # First alternative is the most probable result
+    #     res += result.alternatives[0].transcript
     return res
