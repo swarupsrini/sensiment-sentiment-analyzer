@@ -31,21 +31,29 @@ def get_sentiment_data():
 @app.route("/getSentimentDataStream", methods=["POST"])
 def get_sentiment_data_stream():
     # amt = int(request.args.get('split'))
-    amt = 4
-    name = int(request.args.get('split'))
+    amt = 3
+    name = request.args.get('name')
     data = request.get_data(cache=False)
     res = speechToText.speechToText(data)[0:50]
     res = res.split()
     splits = [" ".join(res[0:i]) for i in range(len(res)//amt, len(res)+len(res)//amt, len(res)//amt)]
-    print(splits)
     for i in range(len(splits)):
         splits[i] = sentiment.analyze(nlu, splits[i])[
             "emotion"]["document"]["emotion"]
-    cache[name] = splits
-    return {"items": splits}
+    print(splits[0])
+    ret = {}
+    ret["anger"] = [splits[i]["anger"] for i in range(len(splits))]
+    ret["sadness"] = [splits[i]["sadness"] for i in range(len(splits))]
+    ret["joy"] = [splits[i]["joy"] for i in range(len(splits))]
+    ret["fear"] = [splits[i]["fear"] for i in range(len(splits))]
+    ret["disgust"] = [splits[i]["disgust"] for i in range(len(splits))]
+    cache[name] = ret
+    return {"items": ret}
+
 
 @app.route("/getSentimentCache", methods=["POST"])
 def get_cache():
+    print(cache)
     return cache
 
 if __name__ == "__main__":
