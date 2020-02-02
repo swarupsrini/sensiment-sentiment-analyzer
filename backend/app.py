@@ -1,5 +1,4 @@
 from flask import Flask, request, send_from_directory
-from flask_socketio import SocketIO
 from flask_cors import CORS
 import os
 import speechToText
@@ -9,7 +8,6 @@ from Microphone import *
 
 app = Flask(__name__, static_folder="../frontend/build/static")
 app.secret_key = os.urandom(24)
-socketio = SocketIO(app)
 CORS(app)
 nlu = sentiment.setup()
 
@@ -33,14 +31,16 @@ def get_sentiment_data_stream():
     data = request.get_data(cache=False)
     res = speechToText.speechToText(data)[0:50]
     res = res.split()
-    splits = [" ".join(res[0:i]) for i in range(len(res)//amt, len(res)+len(res)//amt, len(res)//amt)]
+    splits = [" ".join(res[0:i]) for i in range(
+        len(res)//amt, len(res)+len(res)//amt, len(res)//amt)]
     print(splits)
     for i in range(len(splits)):
-        splits[i] = sentiment.analyze(nlu, splits[i])["emotion"]["document"]["emotion"]
+        splits[i] = sentiment.analyze(nlu, splits[i])[
+            "emotion"]["document"]["emotion"]
     return {"items": splits}
 
 
-@socketio.on("getMicrophoneStream")
+@app.route("/getMicrophoneStream", methods=["POST"])
 def get_mic_stream():
     # for a list of supported languages.
     language_code = 'en-US'  # a BCP-47 language tag
@@ -66,5 +66,5 @@ def get_mic_stream():
 
 
 if __name__ == "__main__":
-    # app.run(host="0.0.0.0", use_reloader=True, port=os.environ["PORT"] if "PORT" in os.environ else 5000, threaded=True)    
-    socketio.run(app)
+    app.run(host="0.0.0.0", use_reloader=True,
+            port=os.environ["PORT"] if "PORT" in os.environ else 5000, threaded=True)
