@@ -1,10 +1,15 @@
 from flask import Flask, request, send_from_directory
+from flask_socketio import SocketIO
 from flask_cors import CORS
 import os
 import speechToText
 import sentiment
+import Microphone
+
 
 app = Flask(__name__, static_folder="../frontend/build/static")
+app.secret_key = os.urandom(24)
+socketio = SocketIO(app)
 CORS(app)
 nlu = sentiment.setup()
 
@@ -33,7 +38,16 @@ def get_sentiment_data_stream():
     for i in range(len(splits)):
         splits[i] = sentiment.analyze(nlu, splits[i])["emotion"]["document"]["emotion"]
     return {"items": splits}
+
+
+@socketio.on("getMicrophoneStream")
+def get_mic_stream():
     
 
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", use_reloader=True, port=os.environ["PORT"] if "PORT" in os.environ else 5000, threaded=True)
+    # app.run(host="0.0.0.0", use_reloader=True, port=os.environ["PORT"] if "PORT" in os.environ else 5000, threaded=True)
+    from gevent import pywsgi
+    from geventwebsocket.handler import WebSocketHandler
+    server = pywsgi.WSGIServer(('', os.environ["PORT"] if "PORT" in os.environ else 5000), app, handler_class=WebSocketHandler)
+    server.serve_forever()
