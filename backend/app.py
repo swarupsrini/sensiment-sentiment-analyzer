@@ -11,6 +11,9 @@ app.secret_key = os.urandom(24)
 CORS(app)
 nlu = sentiment.setup()
 
+language_code = 'en-US'  # a BCP-47 language tag
+
+cache = {}
 
 @app.route("/")
 def root():
@@ -27,43 +30,23 @@ def get_sentiment_data():
 
 @app.route("/getSentimentDataStream", methods=["POST"])
 def get_sentiment_data_stream():
-    amt = int(request.args.get('split'))
+    # amt = int(request.args.get('split'))
+    amt = 4
+    name = int(request.args.get('split'))
     data = request.get_data(cache=False)
     res = speechToText.speechToText(data)[0:50]
     res = res.split()
-    splits = [" ".join(res[0:i]) for i in range(
-        len(res)//amt, len(res)+len(res)//amt, len(res)//amt)]
+    splits = [" ".join(res[0:i]) for i in range(len(res)//amt, len(res)+len(res)//amt, len(res)//amt)]
     print(splits)
     for i in range(len(splits)):
         splits[i] = sentiment.analyze(nlu, splits[i])[
             "emotion"]["document"]["emotion"]
+    cache[name] = splits
     return {"items": splits}
 
-
-@app.route("/getMicrophoneStream", methods=["POST"])
-def get_mic_stream():
-    # for a list of supported languages.
-    language_code = 'en-US'  # a BCP-47 language tag
-
-    client = speech.SpeechClient()
-    config = types.RecognitionConfig(
-        encoding=enums.RecognitionConfig.AudioEncoding.LINEAR16,
-        sample_rate_hertz=RATE,
-        language_code=language_code)
-    streaming_config = types.StreamingRecognitionConfig(
-        config=config,
-        interim_results=True)
-
-    with MicrophoneStream(RATE, CHUNK) as stream:
-        audio_generator = stream.generator()
-        requests = (types.StreamingRecognizeRequest(audio_content=content)
-                    for content in audio_generator)
-
-        responses = client.streaming_recognize(streaming_config, requests)
-
-        # Now, put the transcription responses to use.
-        listen_print_loop(responses)
-
+@app.route("/getSentimentCache", methods=["POST"])
+def get_cache():
+    return cache
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", use_reloader=True,
