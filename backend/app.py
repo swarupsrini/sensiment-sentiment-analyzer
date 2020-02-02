@@ -4,7 +4,7 @@ from flask_cors import CORS
 import os
 import speechToText
 import sentiment
-import Microphone
+from Microphone import *
 
 
 app = Flask(__name__, static_folder="../frontend/build/static")
@@ -42,12 +42,29 @@ def get_sentiment_data_stream():
 
 @socketio.on("getMicrophoneStream")
 def get_mic_stream():
-    
+    # for a list of supported languages.
+    language_code = 'en-US'  # a BCP-47 language tag
+
+    client = speech.SpeechClient()
+    config = types.RecognitionConfig(
+        encoding=enums.RecognitionConfig.AudioEncoding.LINEAR16,
+        sample_rate_hertz=RATE,
+        language_code=language_code)
+    streaming_config = types.StreamingRecognitionConfig(
+        config=config,
+        interim_results=True)
+
+    with MicrophoneStream(RATE, CHUNK) as stream:
+        audio_generator = stream.generator()
+        requests = (types.StreamingRecognizeRequest(audio_content=content)
+                    for content in audio_generator)
+
+        responses = client.streaming_recognize(streaming_config, requests)
+
+        # Now, put the transcription responses to use.
+        listen_print_loop(responses)
 
 
 if __name__ == "__main__":
-    # app.run(host="0.0.0.0", use_reloader=True, port=os.environ["PORT"] if "PORT" in os.environ else 5000, threaded=True)
-    from gevent import pywsgi
-    from geventwebsocket.handler import WebSocketHandler
-    server = pywsgi.WSGIServer(('', os.environ["PORT"] if "PORT" in os.environ else 5000), app, handler_class=WebSocketHandler)
-    server.serve_forever()
+    # app.run(host="0.0.0.0", use_reloader=True, port=os.environ["PORT"] if "PORT" in os.environ else 5000, threaded=True)    
+    socketio.run(app)
