@@ -12,12 +12,11 @@ def speechToText(content):
     config = {
         "encoding": speech.enums.RecognitionConfig.AudioEncoding.LINEAR16,
         "sample_rate_hertz": 8000,
-        "language_code": 'en-US'
+        "language_code": 'en'
     }
     response = client.recognize(config, audio)
-    return response
-    # res = ""
-    # for result in response.results:
-    #     # First alternative is the most probable result
-    #     res += result.alternatives[0].transcript
+    # return response
+    res = ""
+    for result in response.results:
+        res += result.alternatives[0].transcript
     return res
