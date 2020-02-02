@@ -12,7 +12,7 @@ CORS(app)
 def get_sentiment_data():
     data = request.get_data(cache=False)
     res = speechToText.speechToText(data)
-    print(res)
+    # print(res)
     finRes = sentiment.analyze(sentiment.setup(), res)
     print(finRes)
     
