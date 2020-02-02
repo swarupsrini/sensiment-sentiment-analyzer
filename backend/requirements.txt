@@ -4,4 +4,3 @@ google-cloud-storage
 ibm_watson
 google-cloud-speech
 pyaudio
-gevent
