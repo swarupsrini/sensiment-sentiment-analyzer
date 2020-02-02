@@ -13,9 +13,12 @@ def get_sentiment_data():
     data = request.get_data(cache=False)
     res = speechToText.speechToText(data)
     # print(res)
-    finRes = sentiment.analyze(sentiment.setup(), res)
-    print(finRes)
+    fin_res = sentiment.analyze(sentiment.setup(), res)
+    return fin_res["emotion"]["document"]["emotion"]
     
+@app.route("/getSentimentDataStream", methods=["POST"])
+def get_sentiment_data_stream():
+    fin_res = get_sentiment_data()
 
 if __name__ == "__main__":
     app.run()

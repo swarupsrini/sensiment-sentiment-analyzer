@@ -5,10 +5,15 @@ from google.cloud import speech
 def speechToText(content):
     client = speech.SpeechClient()
     audio = {"content": content}
-    config = speech.types.RecognitionConfig(
-        encoding=speech.enums.RecognitionConfig.AudioEncoding.LINEAR16,
-        sample_rate_hertz=8000,
-        language_code='en-US')
+    # config = speech.types.RecognitionConfig(
+    #     encoding=speech.enums.RecognitionConfig.AudioEncoding.LINEAR16,
+    #     sample_rate_hertz=8000,
+    #     language_code='en-US')
+    config = {
+        "encoding": speech.enums.RecognitionConfig.AudioEncoding.LINEAR16,
+        "sample_rate_hertz": 8000,
+        "language_code": 'en-US'
+    }
     response = client.recognize(config, audio)
     res = ""
     for result in response.results:
