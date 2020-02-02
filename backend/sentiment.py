@@ -4,7 +4,7 @@ from ibm_watson.natural_language_understanding_v1 import Features, EmotionOption
 
 
 def setup():
-    with open(".ibm-api-key", "r") as f:
+    with open("ibm-api-key", "r") as f:
         key = f.read()
     service_url = "https://api.us-south.natural-language-understanding.watson.cloud.ibm.com/instances/57bf40d3-1788-445f-8717-63ab3b83442e"
     authenticator = IAMAuthenticator(apikey=key)
