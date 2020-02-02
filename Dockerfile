@@ -1,5 +1,7 @@
 FROM python:buster
 
+RUN apt-get update && apt-get install -y portaudio19-dev python-pyaudio python3-pyaudio
+
 COPY . /app
 
 WORKDIR /app/backend
