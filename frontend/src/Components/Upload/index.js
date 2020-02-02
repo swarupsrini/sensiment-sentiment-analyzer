@@ -1,18 +1,55 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
+import Loader from "../Loader";
 
-console.log(`${window.location.href}:${process.env.PORT}`);
+const SERVER_URL = `http:${window.location.href.split(":")[1]}:5000`;
+console.log(SERVER_URL);
 
-const Upload = () => {
-  const [receivedFiles, setReceivedFiles] = useState([]);
+const baseStyle = {
+  flex: 1,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  padding: "20px",
+  borderWidth: 2,
+  borderRadius: 2,
+  borderColor: "#eeeeee",
+  borderStyle: "dashed",
+  backgroundColor: "#fafafa",
+  color: "#bdbdbd",
+  outline: "none",
+  transition: "border .24s ease-in-out"
+};
 
-  const sendToServer = file => {
-    fetch(`${window.location.href}:${process.env.PORT}/getSentimentData`, {
-      method: "POST",
-      body: file
-    })
-      .then(resp => resp.json())
-      .catch(error => console.log(error));
+const activeStyle = {
+  borderColor: "#2196f3"
+};
+
+const acceptStyle = {
+  borderColor: "#00e676"
+};
+
+const rejectStyle = {
+  borderColor: "#ff1744"
+};
+
+const Upload = ({ onReceivedFiles, onReceivedSentiment }) => {
+  const [currFile, setCurrFile] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const sendToServer = async file => {
+    setIsLoading(true);
+    const resp = await fetch(
+      `${SERVER_URL}/getSentimentDataStream?name=${file.path}`,
+      {
+        method: "POST",
+        body: file
+      }
+    );
+    const json = await resp.json();
+    onReceivedSentiment(json);
+    console.log(json);
+    setIsLoading(false);
   };
 
   const onDrop = useCallback(acceptedFiles => {
@@ -31,23 +68,40 @@ const Upload = () => {
             {file.path} - {file.size} bytes
           </li>
         );
-        setReceivedFiles([...receivedFiles, fileInfo]);
+        setCurrFile(fileInfo);
+        onReceivedFiles(file.path);
       };
       reader.readAsArrayBuffer(file);
     });
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  const {
+    getRootProps,
+    getInputProps,
+    isDragActive,
+    isDragReject,
+    isDragAccept
+  } = useDropzone({ onDrop });
 
+  const style = useMemo(
+    () => ({
+      ...baseStyle,
+      ...(isDragActive ? activeStyle : {}),
+      ...(isDragAccept ? acceptStyle : {}),
+      ...(isDragReject ? rejectStyle : {})
+    }),
+    [isDragActive, isDragReject]
+  );
   return (
-    <div {...getRootProps()}>
+    <div {...getRootProps()} style={style}>
       <input {...getInputProps()} />
       {isDragActive ? (
         <p>Drop the audio files here ...</p>
       ) : (
         <p>Drag 'n' drop some files here, or click to select files</p>
       )}
-      {receivedFiles}
+      {currFile}
+      {isLoading && <Loader />}
     </div>
   );
 };

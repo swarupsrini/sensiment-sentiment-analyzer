@@ -17,3 +17,15 @@
 .App-link {
   color: #61dafb;
 }
+
+body {
+  background: #e2e1e0;
+}
+
+.card {
+  background: #fff;
+  border-radius: 2px;
+  display: inline-block;
+  margin: 1rem;
+  position: relative;
+}
