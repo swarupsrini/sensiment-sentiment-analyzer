@@ -2,10 +2,7 @@ import React, { useCallback, useState, useMemo } from "react";
 import { useDropzone } from "react-dropzone";
 import Loader from "../Loader";
 
-const SERVER_URL =
-  "PORT" in process.env
-    ? `${window.location.href.slice(0, -1)}:${process.env.PORT}`
-    : `http:${window.location.href.split(":")[1]}:5000`;
+const SERVER_URL = window.location.href;
 console.log(SERVER_URL);
 
 const baseStyle = {
