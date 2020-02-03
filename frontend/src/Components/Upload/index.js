@@ -40,7 +40,7 @@ const Upload = ({ onReceivedFiles, onReceivedSentiment }) => {
   const sendToServer = async file => {
     setIsLoading(true);
     const resp = await fetch(
-      `${SERVER_URL}getSentimentDataStream?name=${file.path}`,
+      `http://localhost:5000/getSentimentDataStream?name=${file.path}`,
       {
         method: "POST",
         body: file

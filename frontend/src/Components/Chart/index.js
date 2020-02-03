@@ -15,7 +15,7 @@ const Chart = ({ data }) => (
       type: "linear",
       min: "auto",
       max: "auto",
-      stacked: true,
+      stacked: false,
       reverse: false
     }}
     axisTop={null}
@@ -26,7 +26,7 @@ const Chart = ({ data }) => (
       tickPadding: 5,
       tickRotation: 0,
       legend: "time",
-      legendOffset: 36,
+      legendOffset: 0,
       legendPosition: "middle"
     }}
     axisLeft={{
@@ -35,7 +35,7 @@ const Chart = ({ data }) => (
       tickPadding: 5,
       tickRotation: 0,
       legend: "emotion value",
-      legendOffset: -40,
+      legendOffset: 0,
       legendPosition: "middle"
     }}
     colors={{ scheme: "nivo" }}
@@ -44,7 +44,7 @@ const Chart = ({ data }) => (
     pointBorderWidth={2}
     pointBorderColor={{ from: "serieColor" }}
     pointLabel="y"
-    pointLabelYOffset={-12}
+    pointLabelYOffset={0}
     useMesh={true}
     legends={[
       {
@@ -56,9 +56,9 @@ const Chart = ({ data }) => (
         itemsSpacing: 0,
         itemDirection: "left-to-right",
         itemWidth: 80,
-        itemHeight: 20,
+        itemHeight: 30,
         itemOpacity: 0.75,
-        symbolSize: 12,
+        symbolSize: 14,
         symbolShape: "circle",
         symbolBorderColor: "rgba(0, 0, 0, .5)",
         effects: [
